@@ -1,0 +1,20 @@
+name: CI
+on: [push]
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        cpp-compiler: [g++]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install windows dependencies
+      if: matrix.os == 'windows-latest'
+      run: choco install llvm
+    - name: Run all tests with ${{ matrix.cpp-compiler }}
+      env:
+          CXX: ${{ matrix.cpp-compiler }}
+      run: ./tests/test.sh
+      shell: bash
