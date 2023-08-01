@@ -11,7 +11,7 @@ template<class, class> class CycleCheck;
 
 template<class T> class CycleCheck<T, T> {
 public:
-    static constexpr bool check(void) { return false; }
+  static constexpr bool check(void) { return false; }
 };
 
 template<class From, class To, int = sizeof(CycleCheck<From, To>)>
@@ -23,20 +23,20 @@ constexpr bool cycle_check(char) { return true; }
 #if __cplusplus < 201703L
 template<class>
 constexpr bool check_all(void) {
-    return true;
+  return true;
 }
 template<class From, class To, class... Tos>
 constexpr bool check_all(void) {
-    return cycle_check<From, To>(1) && check_all<From, Tos...>();
+  return cycle_check<From, To>(1) && check_all<From, Tos...>();
 }
 #endif
 
 template<class From, class... Tos>
 constexpr bool cycle_check(void) {
 #if __cplusplus < 201703L
-    return check_all<From, Tos...>();
+  return check_all<From, Tos...>();
 #else
-    return (true && ... && cycle_check<From, Tos>(1));
+  return (true && ... && cycle_check<From, Tos>(1));
 #endif
 }
 
@@ -49,14 +49,14 @@ class CycleChecksExists: public CycleCheckExists<Tos>... {};
 
 template<class From, class To>
 constexpr bool cycle_check_exists(From const * const &, To const *) {
-    static_assert(
+  static_assert(
 #if __cplusplus < 201703L
-        std::is_base_of<CycleCheckExists<To>, CycleCheck<To, From> >::value,
+      std::is_base_of<CycleCheckExists<To>, CycleCheck<To, From> >::value,
 #else
-        std::is_base_of_v<CycleCheckExists<To>, CycleCheck<To, From> >,
+      std::is_base_of_v<CycleCheckExists<To>, CycleCheck<To, From> >,
 #endif
-        "cycle check for strong pointer missing from 'LUMI_CYCLE_CHECK' macro");
-    return true;
+      "cycle check for strong pointer missing from 'LUMI_CYCLE_CHECK' macro");
+  return true;
 }
 
 
@@ -74,11 +74,12 @@ std::shared_ptr<To>
 
 #define LUMI_CYCLE_CHECK(From, Tos...) \
 static_assert(lumi::cycle_check<From, Tos>(), \
-    "cyclic reference detected in type '" #From "'"); \
+  "cyclic reference detected in type '" #From "'"); \
 template<class Other> \
 class lumi::CycleCheck<Other, From>: lumi::CycleChecksExists<Tos> { \
 public: \
-    static constexpr bool check(void) { return lumi::cycle_check<Other, Tos>(); } \
+  static constexpr bool check(void) \
+  { return lumi::cycle_check<Other, Tos>(); } \
 };
 
 #endif
