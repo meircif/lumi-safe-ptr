@@ -4,7 +4,7 @@ result=0
 
 for cxx in g++ clang++
 do
-  for std in c++17 c++20
+  for std in c++11 c++14 c++17 c++20
   do
     echo
     echo "---< run tests using compiler $cxx and standard $std >---"

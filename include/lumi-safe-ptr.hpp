@@ -20,9 +20,24 @@ constexpr bool cycle_check(int) { return CycleCheck<From, To>::check(); }
 template<class, class>
 constexpr bool cycle_check(char) { return true; }
 
+#if __cplusplus < 201703L
+template<class>
+constexpr bool check_all(void) {
+    return true;
+}
+template<class From, class To, class... Tos>
+constexpr bool check_all(void) {
+    return cycle_check<From, To>(1) && check_all<From, Tos...>();
+}
+#endif
+
 template<class From, class... Tos>
 constexpr bool cycle_check(void) {
+#if __cplusplus < 201703L
+    return check_all<From, Tos...>();
+#else
     return (true && ... && cycle_check<From, Tos>(1));
+#endif
 }
 
 
@@ -33,10 +48,15 @@ template<class... Tos>
 class CycleChecksExists: public CycleCheckExists<Tos>... {};
 
 template<class From, class To>
-constexpr void cycle_check_exists(From const * const &, To const *) {
+constexpr bool cycle_check_exists(From const * const &, To const *) {
     static_assert(
+#if __cplusplus < 201703L
+        std::is_base_of<CycleCheckExists<To>, CycleCheck<To, From> >::value,
+#else
         std::is_base_of_v<CycleCheckExists<To>, CycleCheck<To, From> >,
+#endif
         "cycle check for strong pointer missing from 'LUMI_CYCLE_CHECK' macro");
+    return true;
 }
 
 
@@ -48,7 +68,8 @@ constexpr void cycle_check_exists(From const * const &, To const *) {
 #else
 
 #define LUMI_STRONG_PTR(To) \
-constexpr void lumi_cycle_check(To* t) { lumi::cycle_check_exists(this, t); } \
+constexpr bool lumi_cycle_check(To* t) const \
+{ return lumi::cycle_check_exists(this, t); } \
 std::shared_ptr<To> 
 
 #define LUMI_CYCLE_CHECK(From, Tos...) \
