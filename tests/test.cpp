@@ -7,18 +7,20 @@ namespace bbb {class B;}
 namespace ccc {class C;}
 
 
-class A {
-public:
-    LUMI_STRONG_PTR(bbb::B) b;
-    LUMI_STRONG_PTR(ccc::C) c;
-};
-
 #ifdef MAKE_MISSING_CHECK
 LUMI_CYCLE_CHECK(A, bbb::B)
 #else
 LUMI_CYCLE_CHECK(A, bbb::B, ccc::C)
 #endif
 
+class A {
+public:
+    LUMI_STRONG_PTR(bbb::B) b;
+    LUMI_STRONG_PTR(ccc::C) c;
+};
+
+
+LUMI_CYCLE_CHECK(bbb::B, ccc::C)
 
 namespace bbb { 
 class B {
@@ -26,8 +28,10 @@ public:
     LUMI_STRONG_PTR(ccc::C) c;
 }; }
 
-LUMI_CYCLE_CHECK(bbb::B, ccc::C)
 
+#ifdef MAKE_CYCLE_ERROR
+LUMI_CYCLE_CHECK(ccc::C, A)
+#endif
 
 namespace ccc { class C {
 public:
@@ -37,10 +41,6 @@ public:
     std::weak_ptr<A> a;
 #endif
 }; }
-
-#ifdef MAKE_CYCLE_ERROR
-LUMI_CYCLE_CHECK(ccc::C, A)
-#endif
 
 
 int main(void) {
