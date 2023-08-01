@@ -36,7 +36,7 @@ template<class From, class To>
 constexpr void cycle_check_exists(From const * const &, To const *) {
     static_assert(
         std::is_base_of_v<CycleCheckExists<To>, CycleCheck<To, From> >,
-        "cycle check for strong pointer missing from ‘LUMI_CYCLE_CHECK’ macro");
+        "cycle check for strong pointer missing from 'LUMI_CYCLE_CHECK' macro");
 }
 
 
@@ -53,7 +53,7 @@ std::shared_ptr<To>
 
 #define LUMI_CYCLE_CHECK(From, Tos...) \
 static_assert(lumi::cycle_check<From, Tos>(), \
-    "cyclic reference detected in type ‘" #From "’"); \
+    "cyclic reference detected in type '" #From "'"); \
 template<class Other> \
 class lumi::CycleCheck<Other, From>: lumi::CycleChecksExists<Tos> { \
 public: \
