@@ -13,5 +13,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: choco install llvm
     - name: Run all tests
+      env:
+        OS: ${{ matrix.os }}
       run: ./run_tests.sh
       shell: bash
